@@ -1,0 +1,1 @@
+require 'spectator/emacs/version'
