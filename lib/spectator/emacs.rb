@@ -1,5 +1,7 @@
 #require 'spectator/emacs/version'
 require 'spectator'
+require 'socket'
+require 'open4'
 
 class Object
   # Returns a string representing the object as a lisp sexp.
@@ -94,9 +96,9 @@ end
 module Spectator
   module Specs
     def rspec_status(rspec_stats)
-      if stats[:failures] > 0
+      if rspec_stats[:failures] > 0
         :failure
-      elsif stats[:pending] > 0
+      elsif rspec_stats[:pending] > 0
         :pending
       else
         :success
@@ -106,7 +108,7 @@ module Spectator
     def extract_rspec_stats(output, line)
       summary_line = output.split("\n")[line]
       summary_regex = /^(\d*)\sexamples?,\s(\d*)\s(errors?|failures?)[^\d]*((\d*)\spending)?/
-      _, examples, failures, _, pending = summary_line.match(err_regex).to_a
+      _, examples, failures, _, pending = summary_line.match(summary_regex).to_a
       stats = {:examples => examples.to_i, :failures => failures.to_i, :pending => pending.to_i, :summary => summary_line}
       stats.merge(:status =>  rspec_status(stats))
     end
@@ -126,9 +128,9 @@ module Spectator
     def run(cmd)
       puts "=== running: #{cmd} ".ljust(terminal_columns, '=').cyan
       pid, stdin, stdout, stderr = Open4::popen4 cmd
-      status = $?.success
+      ignored, status = Process::waitpid2 pid
       puts "===".ljust(terminal_columns, '=').cyan
-      {:status => status, :stdout => stdout, :stderr => stderr}
+      {:status => status, :stdout => stdout.read.strip, :stderr => stderr.read.strip}
     end
 
     def rspec_send_results(results, stats)
@@ -137,9 +139,9 @@ module Spectator
         " through #{@enotify_slot_id}... ".cyan
         enotify_notify results, stats
         puts "Success!".green
-      rescue
+      rescue SocketError
         puts "Failed!".red
-        init_network
+        enotify_connect
         rspec_send_results results,stats
       end
     end
@@ -154,16 +156,16 @@ module Spectator
 
     def rspec(options)
       unless options.empty?
-        results = run("#{bundle}#{rspec_command} --failure-exit-code 99 #{options}")
+        results = run("#{@bundle}#{rspec_command} --failure-exit-code 99 #{options}")
         status = results[:status].exitstatus
         if status == 99
           puts "An error occurred when running the tests".red
           puts "RSpec output:"
           puts "STDERR:"
-          puts stderr.read.strip
+          puts results[:stderr]
           puts "-" * 80
           puts "STDOUT:"
-          puts stdout.read.strip
+          puts results[:stdout]
         else
           begin
             stats = extract_rspec_summary results[:stdout]
@@ -172,9 +174,16 @@ module Spectator
             rspec_send_results results[:stdout], stats
           rescue Exception => e
             puts "ERROR extracting summary from rspec output: #{e}".red
+            puts e.backtrace
+            puts "RSpec output:"
+            puts "STDERR:"
+            puts results[:stderr]
+            puts "-" * 80
+            puts "STDOUT:"
+            puts results[:stdout]
             print "Exit? (y/N)"
-            answer = readline
-            abort "Execution aborted by the user"  if answer.downcase == 'y'
+            answer = STDIN.gets
+            abort "Execution aborted by the user"  if answer.strip.downcase == 'y'
           end
         end
       end
@@ -199,10 +208,10 @@ module Spectator
         :notification => {
           :text => @notification_messages[status],
           :face => @notification_face[status],
-          :help => format_help(stats),
+          :help => format_tooltip(stats),
           :mouse_1 => :enotify_rspec_mouse_1_handler
         },
-        :data => results
+        :data => stdout
       }
 
       enotify_send message
@@ -221,16 +230,16 @@ module Spectator
         @enotify_host, @enotify_port = host_and_port.split(/\s:\s/)
         @enotify_port = @enotify_port.to_i
       end
-      init_network
+      enotify_connect
     end
 
     def enotify_connect
       begin
         print "=== Connecting to emacs... ".cyan
         @sock = TCPSocket.new(@enotify_host, @enotify_port)
-        eregister
+        enotify_register
         puts "Success!".green
-      rescue
+      rescue SocketError
         puts "Failed!".red
         rescue_sock_error
       end
@@ -240,7 +249,7 @@ module Spectator
       t = Time.now
       "#{t.year}-#{t.month}-#{t.day} -- #{t.hour}:#{t.min}:#{t.sec}" +
         "#{stats[:examples]} examples, #{stats[:failures]} failures" +
-        (stats[:pending] > 0) ? ", #{stats[:pending]} pending.\n" : ".\n" +
+        ((stats[:pending] > 0) ? ", #{stats[:pending]} pending.\n" : ".\n") +
         "\nmouse-1: switch to rspec output buffer"
     end
 
@@ -250,7 +259,7 @@ module Spectator
   class ERunner < Runner
     include Specs
     include Emacs
-    def initialize(options, &block)
+    def initialize(options={}, &block)
       @default_options = {
         :enotify_port => 5000,
         :enotify_host => 'localhost',
@@ -267,15 +276,15 @@ module Spectator
       options.each {|k, v| puts "#{k} => #{v}"}
       @enotify_host = options[:enotify_host]
       @enotify_port = options[:enotify_port]
-      @notification_message = options[:notification_messages]
+      @notification_messages = options[:notification_messages]
       @notification_face = options[:notification_face]
       @error_count_line = options[:error_count_line] || -2
       @enotify_slot_id = options[:slot_id] ||
-        ((File.basename Dir.pwd).split('_').map {|s| s.capitalize}).gsub('-','/')
+        ((File.basename Dir.pwd).split('_').map {|s| s.capitalize}).join.gsub('-','/')
       check_if_bundle_needed
       enotify_connect
       yield self  if block_given?
-      super
+      super()
     end
   end
 end
