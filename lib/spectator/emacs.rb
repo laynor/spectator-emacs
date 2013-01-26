@@ -247,7 +247,7 @@ module Spectator
 
     def format_tooltip(stats)
       t = Time.now
-      "#{t.year}-#{t.month}-#{t.day} -- #{t.hour}:#{t.min}:#{t.sec}" +
+      "#{t.year}-#{t.month}-#{t.day} -- #{t.hour}:#{t.min}:#{t.sec}\n" +
         "#{stats[:examples]} examples, #{stats[:failures]} failures" +
         ((stats[:pending] > 0) ? ", #{stats[:pending]} pending.\n" : ".\n") +
         "\nmouse-1: switch to rspec output buffer"
