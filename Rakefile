@@ -2,7 +2,7 @@
 
 require 'rubygems'
 require 'rake'
-
+$:.unshift 'lib'
 begin
   gem 'rubygems-tasks', '~> 0.2'
   require 'rubygems/tasks'
@@ -39,3 +39,8 @@ end
 
 task :test    => :spec
 task :default => :spec
+
+desc "Run spectator-emacs"
+task :spectator_emacs do
+  load "bin/spectator-emacs"
+end

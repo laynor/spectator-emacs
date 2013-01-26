@@ -127,8 +127,8 @@ module Spectator
 
     def run(cmd)
       puts "=== running: #{cmd} ".ljust(terminal_columns, '=').cyan
-      pid, stdin, stdout, stderr = Open4::popen4 cmd
-      ignored, status = Process::waitpid2 pid
+      pid, _, stdout, stderr = Open4::popen4 cmd
+      _, status = Process::waitpid2 pid
       puts "===".ljust(terminal_columns, '=').cyan
       {:status => status, :stdout => stdout.read.strip, :stderr => stderr.read.strip}
     end
@@ -169,7 +169,7 @@ module Spectator
         else
           begin
             stats = extract_rspec_summary results[:stdout]
-            puts(stats[:summary].send (results[:status] == 0 ? :green : :red))
+            puts(stats[:summary].send(results[:status] == 0 ? :green : :red))
             # enotify_notify results[:stdout], stats
             rspec_send_results results[:stdout], stats
           rescue Exception => e
