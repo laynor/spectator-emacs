@@ -1,0 +1,13 @@
+#!/usr/env/bin ruby
+require 'spectator/emacs'
+
+if File.exists? '.spectator-emacs'
+  content = File.read('.spectator-emacs')
+  eval(content)  if not content.nil?
+end
+
+@runner ||= Spectator::ERunner.new
+
+# Local Variables:
+# mode: ruby
+# End:

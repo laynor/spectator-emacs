@@ -94,6 +94,9 @@ end
 
 
 module Spectator
+  class SummaryExtractionError < RuntimeError
+  end
+
   module Specs
     def rspec_status(rspec_stats)
       if rspec_stats[:failures] > 0
@@ -108,7 +111,10 @@ module Spectator
     def extract_rspec_stats(output, line)
       summary_line = output.split("\n")[line]
       summary_regex = /^(\d*)\sexamples?,\s(\d*)\s(errors?|failures?)[^\d]*((\d*)\spending)?/
-      _, examples, failures, _, pending = summary_line.match(summary_regex).to_a
+      matchdata = summary_line.match(summary_regex)
+      raise SummaryExtractionError.new  if matchdata.nil?
+      _, examples, failures, _, pending = matchdata.to_a
+      # We need to
       stats = {:examples => examples.to_i, :failures => failures.to_i, :pending => pending.to_i, :summary => summary_line}
       stats.merge(:status =>  rspec_status(stats))
     end
@@ -116,7 +122,7 @@ module Spectator
     def extract_rspec_summary(output)
       begin
         extract_rspec_stats output, @summary_line_number
-      rescue
+      rescue SummaryExtractionError
         puts  "--- Error while extracting summary with the default method.".red
         print "--- Summary line number: ".yellow
         @summary_line_number = STDIN.gets.to_i
@@ -172,7 +178,7 @@ module Spectator
             puts(stats[:summary].send(results[:status] == 0 ? :green : :red))
             # enotify_notify results[:stdout], stats
             rspec_send_results results[:stdout], stats
-          rescue Exception => e
+          rescue StandardError => e
             puts "ERROR extracting summary from rspec output: #{e}".red
             puts e.backtrace
             puts "RSpec output:"
@@ -278,12 +284,15 @@ module Spectator
       @enotify_port = options[:enotify_port]
       @notification_messages = options[:notification_messages]
       @notification_face = options[:notification_face]
-      @error_count_line = options[:error_count_line] || -2
+      # @summary_line_number = options[:summary_line] || -2
       @enotify_slot_id = options[:slot_id] ||
         ((File.basename Dir.pwd).split('_').map {|s| s.capitalize}).join.gsub('-','/')
       check_if_bundle_needed
       enotify_connect
       yield self  if block_given?
+      # TODO: load .spectator-emacs
+      # contents = File::read('.spectator-emacs')
+      # eval(contents)
       super()
     end
   end

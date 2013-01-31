@@ -2,6 +2,7 @@
 
 require 'rubygems'
 require 'rake'
+require 'rake/clean'
 $:.unshift 'lib'
 begin
   gem 'rubygems-tasks', '~> 0.2'
