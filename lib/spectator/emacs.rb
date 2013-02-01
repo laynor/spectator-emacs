@@ -36,7 +36,7 @@ end
 
 class String
   def to_lisp
-    "\"#{self}\""
+    inspect
   end
 end
 
