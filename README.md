@@ -38,7 +38,16 @@ To run `spectator-emacs`, just run it!
 ```
 $ spectator-emacs
 ```
-To customize it, just create a ruby script lik
+To customize it, create a .spectator-emacs file in your project root.
+You can customize various aspects of how spectator-emacs works:
+* Enotify host (default: localhost)
+* Enotify port (default: 5000)
+* The notification message that will appear on the emacs modeline
+  (default: 'F' for failures, 'P' for pending, 'S' for success)
+* The notification faces used to display the icons in the modeline
+
+* The Enotify slot id to register for notifications
+All of these have decent defaults
 
 ## Requirements
 
@@ -50,10 +59,10 @@ You also need to load the `enotify-spectator-emacs` Enotify plugin.
 
 
 ## Install
-
 ```
 $ gem install spectator-emacs
 ```
+### Emacs
 
 ## Synopsis
 

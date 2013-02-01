@@ -15,8 +15,16 @@ class Symbol
     to_s.gsub "_", "-"
   end
 
-  # Returns a symbol with the same name prefixed by a colon. This is
+  # # giovanni cane
+  # Returns a **symbol** with the same name prefixed by a colon. This is
   # convenient when converting a symbol with the to_lisp method.
+  #
+  # ```
+  # def foo
+  #   puts "bar"
+  # end
+  # ```
+  #
   def keyword
     if self[0] == ':'
       self
