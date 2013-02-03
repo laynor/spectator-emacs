@@ -34,7 +34,7 @@ describe 'Spectator' do
         end
 
         it "should correctly represent a string" do
-          'asdf\nfoobar'.to_lisp.should == '"asdf\nfoobar"'
+          "asdf\nfoobar".to_lisp.should == '"asdf\nfoobar"'
         end
 
         it "should correctly represent an array as a list" do
