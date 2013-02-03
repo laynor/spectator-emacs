@@ -3,6 +3,7 @@
 require 'rubygems'
 require 'rake'
 require 'rake/clean'
+require 'yard'
 $:.unshift 'lib'
 begin
   gem 'rubygems-tasks', '~> 0.2'
@@ -42,6 +43,10 @@ task :test    => :spec
 task :default => :spec
 
 desc "Run spectator-emacs"
-task :spectator_emacs do
+task :'spectator-emacs' do
   load "bin/spectator-emacs"
 end
+
+## YARD stuff
+YARD::Rake::YardocTask.new
+CLOBBER.include('doc', '.yardoc')
