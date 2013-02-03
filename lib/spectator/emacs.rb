@@ -35,12 +35,20 @@ class Symbol
 end
 
 class String
+  # Returns a string that represents a lisp string.
+  # This is basically just an alias for {String#inspect}
   def to_lisp
     inspect
   end
 end
 
 class Array
+  # Returns a string that represents the array as a lisp list.
+  #
+  # Example:
+  #
+  # ```
+  # [:foo, 123, "bar"].to_lisp => '(foo 123 "bar")'
   def to_lisp
     sexp_array = map { |el| el.to_lisp }
     "(#{sexp_array.join ' '})"
