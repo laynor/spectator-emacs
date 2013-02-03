@@ -1,4 +1,4 @@
-#require 'spectator/emacs/version'
+require 'spectator/emacs/version'
 require 'spectator'
 require 'socket'
 require 'open4'
