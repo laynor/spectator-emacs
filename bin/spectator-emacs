@@ -1,12 +1,39 @@
 #!/usr/env/bin ruby
-require 'spectator/emacs'
 
-if File.exists? '.spectator-emacs'
-  content = File.read('.spectator-emacs')
-  eval(content)  if not content.nil?
+require 'spectator/emacs'
+require 'docopt'
+CONFIGFILE = '.spectator-emacs'
+THISFILE = File.basename __FILE__
+doc = <<DOCOPT
+Listen to file changes and run RSpec, sending notifications to Emacs via Enotify.
+
+Usage:
+  #{THISFILE} [--config <filename>]
+  #{THISFILE} -h | --help
+  #{THISFILE} --version
+
+Options:
+  -h --help             Show this screen.
+  --config <filename>   Configuration file to read [default: .spectator-emacs]
+  --version             Show version.
+
+DOCOPT
+
+begin
+  require 'pp'
+  args = Docopt::docopt(doc, :version => Spectator::Emacs::VERSION)
+  config_file = args['--config']
+  pp args
+  if File.exists? config_file
+    content = File.read(config_file)
+    eval(content)  if not content.nil?
+  end
+
+  @runner ||= Spectator::ERunner.new
+rescue Docopt::Exit => e
+  puts e.message
 end
 
-@runner ||= Spectator::ERunner.new
 
 # Local Variables:
 # mode: ruby
