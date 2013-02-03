@@ -32,6 +32,10 @@ If you hate growl-style popups and prefer a simple green/red
   output formats
 * all the features offered by Spectator
 
+## Install
+```
+$ gem install spectator-emacs
+```
 ## Examples
 
 To run `spectator-emacs`, just run it!
@@ -40,14 +44,87 @@ $ spectator-emacs
 ```
 To customize it, create a .spectator-emacs file in your project root.
 You can customize various aspects of how spectator-emacs works:
+
 * Enotify host (default: localhost)
 * Enotify port (default: 5000)
 * The notification message that will appear on the emacs modeline
   (default: 'F' for failures, 'P' for pending, 'S' for success)
 * The notification faces used to display the icons in the modeline
-
+  (default: `enotify-success-face` for success,
+  `enotify-failure-face`for failures, `enotify-warning-face` for
+  success with pending examples)
 * The Enotify slot id to register for notifications
-All of these have decent defaults
+
+An example `.spectator-emacs' file:
+
+
+```ruby
+require 'spectator/emacs'
+
+@runner = Spectator::ERunner.new(:enotify_port => 5001,
+                                 :notification_messages => {
+                                   :failure => "failure",
+                                   :success => "success",
+                                   :pending => "pending"
+                                 },
+                                 :slot_id => "project foobar"
+                                 :notification_face => {
+                                   :pending => :font_lock_warning_face,
+                                   # see the docs for detail on Symbol#keyword
+                                   :success => :success.keyword,
+                                   :failure => :failure
+                                 }) do |runner|
+  # This code will be executed before entering the main loop.
+
+  def format_summary(examples, failures, pending)
+    summary = "#{examples} examples"
+    summary << ", #{failures} failures"  if failures > 0
+    summary << ", #{pending} pending"  if pending > 0
+    summary << "."
+    summary
+  end
+
+  # The default summary extraction method works with
+  # the standard documentation formatter, or any formatter
+  # that puts the summary on the last line and with the
+  # same format of the documentation formatter.
+  # It uses the helper function
+  # Spectator::Spec#extract_rspec_stats, which can be
+  # useful if the summary is expressed with the same
+  # pattern but on a line other than the last.
+  # For example, the RSpecOrgFormatter puts the summary on
+  # the 6th-last line.
+  #
+  def extract_rspec_org_summary(output)
+    runner.extract_rspec_stats(output, -6)
+  end
+
+  # Suppose rspec is using a custom formatter that
+  # puts the summary in a format in the last lines
+  # with a format like the following:
+  #
+  #   Examples: 123
+  #   Errors: 12
+  #   Pending: 2
+  #
+  def runner.extract_rspec_summary(output)
+    summary_lines = summary[-3..-1]
+    examples = summary[-3].split(':')[1].to_i
+    errors = summary[-2].split(':')[1].to_i
+    pending = summary[-1].split(':')[1].to_i
+    stats = {
+      :examples => examples,
+      :failures => failures,
+      :pending => pending,
+      :summary => format_summary(examples, failures, pending)
+    }
+    stats.merge(:status => rspec_status(stats))
+    stats
+  end
+end
+```
+
+
 
 ## Requirements
 
@@ -57,17 +134,13 @@ repository.
 
 You also need to load the `enotify-spectator-emacs` Enotify plugin.
 
+Put this in your .emacs:
 
-## Install
-```
-$ gem install spectator-emacs
-```
-### Emacs
-
-## Synopsis
-
-```
-$ spectator-emacs
+```lisp
+(require 'enotify)
+(enotify-minor-mode t)
+(add-to-list 'load-path "path/to/enotify-spectator-emacs")
+(require 'enotify-spectator-emacs)
 ```
 
 ## Copyright
