@@ -5,8 +5,22 @@ require File.expand_path('../lib/spectator/emacs/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.name          = "spectator-emacs"
   gem.version       = Spectator::Emacs::VERSION
-  gem.summary       = %q{TODO: Summary}
-  gem.description   = %q{TODO: Description}
+  gem.summary       = %q{A Spectator monkey-patch that displays notifications on the emacs modeline.}
+  gem.description   = <<-DESCRIPTION
+  spectator-emacs is a Spectator extension that provides discreet
+  notificatoins in the Emacs modeline, via the Enotify Emacs
+  notification system.
+
+  == Features ==
+  * Notifications on the emacs modeline
+  * Short summary report on mouse-over in the modeline indicator
+  * Easily switch to the results buffer with just a click on the
+    modeline indicator
+  * Org formatted RSpec results with the aid of RSpec Org Formatter
+  * Summary extraction can be customized to work with different RSpec
+    output formats
+  * all the features offered by Spectator
+  DESCRIPTION
   gem.license       = "MIT"
   gem.authors       = ["Alessandro Piras"]
   gem.email         = "laynor@gmail.com"
