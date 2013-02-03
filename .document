@@ -1,4 +1,2 @@
 lib/**/*.rb
-README.rdoc
-ChangeLog.rdoc
-LICENSE.txt
+bin/spectator-emacs
