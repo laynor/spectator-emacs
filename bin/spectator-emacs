@@ -8,8 +8,9 @@ doc = <<DOCOPT
 Listen to file changes and run RSpec, sending notifications to Emacs via Enotify.
 
 Usage:
+  #{THISFILE}
   #{THISFILE} [--config <filename>]
-  #{THISFILE} -h | --help
+  #{THISFILE} (-h | --help)
   #{THISFILE} --version
 
 Options:
@@ -21,16 +22,19 @@ DOCOPT
 
 begin
   require 'pp'
-  args = Docopt::docopt(doc, :version => Spectator::Emacs::VERSION)
-  config_file = args['--config']
+
+  args = Docopt::docopt(doc, :help => false, :version => Spectator::Emacs::VERSION)
+  puts "foobar"
+  config_file = args['--config'] rescue nil
   pp args
-  if File.exists? config_file
+  if config_file and File.exists? config_file
     content = File.read(config_file)
     eval(content)  if not content.nil?
   end
 
   @runner ||= Spectator::ERunner.new
 rescue Docopt::Exit => e
+  puts e
   puts e.message
 end
 

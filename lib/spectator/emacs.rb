@@ -294,7 +294,7 @@ module Spectator
 
     # Registers the slot named `@enotify_slot_id` with Enotify.
     def enotify_register
-      enotify_send :register => @enotify_slot_id, :handler_fn => :enotify_rspec_result_message_handler
+      enotify_send :register => @enotify_slot_id, :handler_fn => "tdd"
     end
 
     # Sends a notification to the enotify host with the RSpec results.
@@ -312,7 +312,7 @@ module Spectator
           :text => @notification_messages[status],
           :face => @notification_face[status],
           :help => format_tooltip(stats),
-          :mouse_1 => :enotify_rspec_mouse_1_handler
+          :mouse_1 => "tdd"
         },
         :data => stdout
       }
