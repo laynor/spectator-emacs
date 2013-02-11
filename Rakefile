@@ -44,7 +44,7 @@ task :default => :spec
 
 desc "Run spectator-emacs"
 task :'spectator-emacs' do
-  load "bin/spectator-emacs"
+  system "ruby", "-Ilib", "bin/spectator-emacs"
 end
 
 ## YARD stuff

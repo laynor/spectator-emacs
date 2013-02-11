@@ -314,7 +314,7 @@ module Spectator
           :help => format_tooltip(stats),
           :mouse_1 => "tdd"
         },
-        :data => stdout
+        :data => { :mode => "org", :report_text => stdout }
       }
 
       enotify_send message
