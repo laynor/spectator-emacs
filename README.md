@@ -54,6 +54,7 @@ You can customize various aspects of how spectator-emacs works:
   `enotify-failure-face`for failures, `enotify-warning-face` for
   success with pending examples)
 * The Enotify slot id to register for notifications
+* The major mode used for the rspec output buffer
 
 An example `.spectator-emacs' file:
 
@@ -67,7 +68,9 @@ require 'spectator/emacs'
                                    :success => "success",
                                    :pending => "pending"
                                  },
-                                 :slot_id => "project foobar"
+                                 # Use org-mode to display the report buffer
+                                 :report_buffer_mode => "org",
+                                 :slot_id => "project foobar",
                                  :notification_face => {
                                    :pending => :font_lock_warning_face,
                                    # see the docs for detail on Symbol#keyword
@@ -138,9 +141,8 @@ Put this in your .emacs:
 
 ```lisp
 (require 'enotify)
+(require 'enotify-tdd)
 (enotify-minor-mode t)
-(add-to-list 'load-path "path/to/enotify-spectator-emacs")
-(require 'enotify-spectator-emacs)
 ```
 
 ## Copyright

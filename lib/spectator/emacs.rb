@@ -314,7 +314,7 @@ module Spectator
           :help => format_tooltip(stats),
           :mouse_1 => "tdd"
         },
-        :data => { :mode => "org", :report_text => stdout }
+        :data => { :mode => @report_buffer_mode, :report_text => stdout }
       }
 
       enotify_send message
@@ -394,6 +394,12 @@ module Spectator
     #   the faces to apply to the notification *icon* in the Emacs modeline.
     #   Values must be {Symbol}s, like for example `:font_lock_constant_face`
     #   in order to use Emacs' `font-lock-warning-face`.
+    #   ##### :report_buffer_mode ({String})
+    #   The major mode to use for the report buffer on emacs.
+    #   It must be specified in the same way as an emacs magic comment, i.e.
+    #   without the trailing "-mode".
+    #   For example, if you are using RspecOrgFormatter, and you want to use
+    #   org-mode to display the report, specify `"org"`.
     #   Defaults to
     #
     #      ```
@@ -428,6 +434,7 @@ module Spectator
       puts "======= OPTIONS ======="
       options.each {|k, v| puts "#{k} => #{v}"}
       @enotify_host = options[:enotify_host]
+      @report_buffer_mode = options[:report_buffer_mode]
       @enotify_port = options[:enotify_port]
       @notification_messages = options[:notification_messages]
       @notification_face = options[:notification_face]
