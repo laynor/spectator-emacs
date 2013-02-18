@@ -5,7 +5,7 @@ require 'open4'
 
 class NilClass
   def to_lisp
-    nil
+    'nil'
   end
 end
 
