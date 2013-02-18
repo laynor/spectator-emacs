@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    spectator-emacs (0.1.0)
+    spectator-emacs (0.2.0)
       docopt
       open4
       rb-inotify (~> 0.8.8)
