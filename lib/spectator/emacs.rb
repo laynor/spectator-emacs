@@ -3,6 +3,12 @@ require 'spectator'
 require 'socket'
 require 'open4'
 
+class NilClass
+  def to_lisp
+    nil
+  end
+end
+
 class Object
   # Returns a string representing the object as a lisp sexp.
   def to_lisp
