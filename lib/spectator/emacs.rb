@@ -254,10 +254,10 @@ module Spectator
         :notification => {
           :text => @notification_messages[:error],
           :face => @notification_face[:error],
-          :help => "" # format_tooltip(stats),
+          :help => "", # format_tooltip(stats),
           :mouse_1 => "tdd"
         },
-        :data => { :mode => "compilation", :report_text => stdout + stderr }
+        :data => { :mode => "org", :report_text => stdout + stderr }
       }
 
       enotify_send message
@@ -279,6 +279,7 @@ module Spectator
           puts "-" * 80
           puts "STDOUT:"
           puts results[:stdout]
+          puts "sending error message"
           send_error(results[:stdout], results[:stderr])
         else
           begin
@@ -445,11 +446,12 @@ module Spectator
       @default_options = {
         :enotify_port => 5000,
         :enotify_host => 'localhost',
-        :notification_messages => {:failure => "F", :success => "S", :pending => "P"},
+        :notification_messages => {:failure => "F", :success => "S", :pending => "P", :error => "E"},
         :notification_face => {
           :failure => :failure.keyword,
           :success => :success.keyword,
-          :pending => :warning.keyword
+          :pending => :warning.keyword,
+          :error   => :error
         }
       }
       options = @default_options.merge options
