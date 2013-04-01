@@ -248,6 +248,22 @@ module Spectator
       end
     end
 
+    def send_error(stdout, stderr)
+      message = {
+        :id => @enotify_slot_id,
+        :notification => {
+          :text => @notification_messages[:error],
+          :face => @notification_face[:error],
+          :help => "" # format_tooltip(stats),
+          :mouse_1 => "tdd"
+        },
+        :data => { :mode => "compilation", :report_text => stdout + stderr }
+      }
+
+      enotify_send message
+    end
+
+
     # Runs the `rspec` command with the given options, and notifies Emacs of the results.
     #
     # @param [String] options The command line arguments to pass to rspec.
@@ -263,6 +279,7 @@ module Spectator
           puts "-" * 80
           puts "STDOUT:"
           puts results[:stdout]
+          send_error(results[:stdout], results[:stderr])
         else
           begin
             stats = extract_rspec_summary results[:stdout]
