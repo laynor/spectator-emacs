@@ -330,6 +330,9 @@ module Spectator
     def enotify_notify(stdout, stats)
       #stats = extract_rspec_stats stdout
       status = stats[:status]
+      minibuffer_message = "#{stats[:examples]} examples, #{stats[:failures]} failures" +
+        ((stats[:pending] > 0) ? ", #{stats[:pending]} pending.\n" : ".\n")
+
       message = {
         :id => @enotify_slot_id,
         :notification => {
@@ -338,7 +341,7 @@ module Spectator
           :help => format_tooltip(stats),
           :mouse_1 => "tdd"
         },
-        :data => { :mode => @report_buffer_mode, :report_text => stdout }
+        :data => { :mode => @report_buffer_mode, :report_text => stdout, :message => minibuffer_message }
       }
 
       enotify_send message
