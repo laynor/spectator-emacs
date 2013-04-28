@@ -32,13 +32,12 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
 
   gem.add_development_dependency 'rdoc', '~> 3.0'
-  gem.add_development_dependency 'rspec', '~> 2.4'
+  gem.add_development_dependency 'rspec'
   gem.add_development_dependency 'rubygems-tasks', '~> 0.2'
   gem.add_development_dependency 'yard'
   gem.add_development_dependency 'redcarpet'
   gem.add_dependency 'rspec'
   gem.add_dependency 'spectator', '~> 1.2'
   gem.add_dependency 'open4'
-  gem.add_dependency 'rb-inotify', '~> 0.8.8'
   gem.add_dependency 'docopt'
 end
