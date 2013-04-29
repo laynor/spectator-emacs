@@ -249,6 +249,15 @@ module Spectator
     end
 
     def send_error(stdout, stderr)
+      report_header = """################################## ERROR REPORT ##################################
+
+An error happened during the test run. Check your spec files.
+
+>-------------------------------- Error Message --------------------------------<
+"""
+
+
+
       message = {
         :id => @enotify_slot_id,
         :notification => {
@@ -257,7 +266,7 @@ module Spectator
           :help => "", # format_tooltip(stats),
           :mouse_1 => "tdd"
         },
-        :data => { :mode => "org", :report_text => stdout + stderr }
+        :data => { :mode => "org", :report_text => report_header + stdout + stderr }
       }
 
       enotify_send message
