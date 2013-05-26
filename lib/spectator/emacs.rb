@@ -158,9 +158,6 @@ module Spectator
     # Returns a hash that summarizes the rspec results.
     #
     # @param [String] output the rspec output
-    # @param [Integer] line_number the line number of the summary in the rspec
-    #   output. It can be negative: -1 indicates the last line, -2
-    #   indicates the second last line and so on.
     # @return [Hash] a hash table with keys ```:examples, :failures, :pending, :summary, :status```.
     #
     #   * **:examples** => number of examples ran
@@ -168,9 +165,9 @@ module Spectator
     #   * **:pending** => number of pending examples ran
     #   * **:summary** => the summary string from which the above have been extracted
     #   * **:status**  => one of ```:failure, :pending, :success```
-    def extract_rspec_stats(output, line_number)
-      summary_line = output.split("\n")[line_number]
+    def extract_rspec_stats(output)
       summary_regex = /^(\d*)\sexamples?,\s(\d*)\s(errors?|failures?)[^\d]*((\d*)\spending)?/
+      summary_line = output.split("\n").detect { |line| line.match(summary_regex) }
       matchdata = summary_line.match(summary_regex)
       raise SummaryExtractionError.new  if matchdata.nil?
       _, examples, failures, _, pending = matchdata.to_a
@@ -195,14 +192,7 @@ module Spectator
     #        :success, :pending, :failure
     #        ```
     def extract_rspec_summary(output)
-      begin
-        extract_rspec_stats output, @summary_line_number
-      rescue SummaryExtractionError
-        puts  "--- Error while extracting summary with the default method.".red
-        print "--- Summary line number: ".yellow
-        @summary_line_number = STDIN.gets.to_i
-        extract_rspec_summary output
-      end
+      extract_rspec_stats output
     end
 
     # Runs a command and returns a hash containing exit status,
@@ -475,7 +465,6 @@ An error happened during the test run. Check your spec files.
       @enotify_port = options[:enotify_port]
       @notification_messages = options[:notification_messages]
       @notification_face = options[:notification_face]
-      @summary_line_number = options[:summary_line] || -1
       @enotify_slot_id = options[:slot_id] ||
         ((File.basename Dir.pwd).split('_').map {|s| s.capitalize}).join.gsub('-','/')
       check_if_bundle_needed
