@@ -87,44 +87,6 @@ require 'spectator/emacs'
     summary
   end
 
-  # The default summary extraction method works with
-  # the standard documentation formatter, or any formatter
-  # that puts the summary on the last line and with the
-  # same format of the documentation formatter.
-  # It uses the helper function
-  # Spectator::Spec#extract_rspec_stats, which can be
-  # useful if the summary is expressed with the same
-  # pattern but on a line other than the last.
-  # For example, the RSpecOrgFormatter puts the summary on
-  # the 6th-last line.
-  #
-  def extract_rspec_org_summary(output)
-    runner.extract_rspec_stats(output, -6)
-  end
-
-  # Suppose rspec is using a custom formatter that
-  # puts the summary in a format in the last lines
-  # with a format like the following:
-  #
-  #   Examples: 123
-  #   Errors: 12
-  #   Pending: 2
-  #
-  def runner.extract_rspec_summary(output)
-    summary_lines = summary[-3..-1]
-    examples = summary[-3].split(':')[1].to_i
-    errors = summary[-2].split(':')[1].to_i
-    pending = summary[-1].split(':')[1].to_i
-    stats = {
-      :examples => examples,
-      :failures => failures,
-      :pending => pending,
-      :summary => format_summary(examples, failures, pending)
-    }
-    stats.merge(:status => rspec_status(stats))
-    stats
-  end
-end
 ```
 
 
@@ -155,3 +117,7 @@ See LICENSE.txt for details.
 [spectator]:http://github.com/elia/spectator
 [RSpecOrgFormatter]:http://github.org/laynor/rspec_org_formatter
 [melpa]:http://melpa.milkbox.net/
+
+## Thank yous
+Thanks to Roberto Romero (sildur) for the automatic summary line detection patch!
+
