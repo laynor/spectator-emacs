@@ -32,7 +32,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
 
   gem.add_development_dependency 'rdoc', '~> 3.0'
-  gem.add_development_dependency 'rspec'
+  gem.add_development_dependency 'rspec_org_formatter'
   gem.add_development_dependency 'rubygems-tasks', '~> 0.2'
   gem.add_development_dependency 'yard'
   gem.add_development_dependency 'redcarpet'
