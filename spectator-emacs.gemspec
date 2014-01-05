@@ -37,7 +37,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'yard'
   gem.add_development_dependency 'redcarpet'
   gem.add_dependency 'rspec'
-  gem.add_dependency 'spectator', '1.2.6'
+  gem.add_dependency 'spectator', '~> 1.2.8'
   gem.add_dependency 'open4'
   gem.add_dependency 'docopt'
 end
