@@ -119,5 +119,6 @@ See LICENSE.txt for details.
 [melpa]:http://melpa.milkbox.net/
 
 ## Thank yous
-Thanks to Roberto Romero (sildur) for the automatic summary line detection patch!
+Thanks to Roberto Romero (sildur) for the automatic summary line detection patch,
+and to Petko Bordjukov for his ruby 2.1 compatibility fixes!
 
